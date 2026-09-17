@@ -36,6 +36,19 @@ model Setting {
   facebook      String   @default("")
   twitter       String   @default("")
   linkedin      String   @default("")
+
+  /// SEO — canonical host, defaults and search-console verification.
+  siteUrl            String @default("")
+  metaTitle          String @default("")
+  metaDescription    String @default("")
+  metaKeywords       String @default("")
+  defaultOgImage     String @default("")
+  twitterHandle      String @default("")
+  googleVerification String @default("")
+  bingVerification   String @default("")
+  gaMeasurementId    String @default("")
+  organizationType   String @default("Organization")
+
   updatedAt     DateTime @updatedAt @default(now())
 }
 
@@ -68,6 +81,11 @@ model Category {
   subtitle String @default("")
   icon     String @default("lotus")
   position Int    @default(0)
+
+  /// SEO overrides for the category listing page.
+  metaTitle       String @default("")
+  metaDescription String @default("")
+
   books    Book[]
 }
 
@@ -87,6 +105,16 @@ model Book {
   position      Int       @default(0)
   categoryId    String?
   category      Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  /// SEO overrides. Blank falls back to the title / description above.
+  metaTitle       String  @default("")
+  metaDescription String  @default("")
+  keywords        String  @default("")
+  ogImage         String  @default("")
+  noindex         Boolean @default(false)
+  author          String  @default("")
+  datePublished   String  @default("")
+
   chapters      Chapter[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt @default(now())
@@ -137,6 +165,15 @@ model Post {
   coverImage  String    @default("")
   published   Boolean   @default(false)
   publishedAt DateTime?
+
+  /// SEO overrides. Blank falls back to the title / excerpt above.
+  metaTitle       String  @default("")
+  metaDescription String  @default("")
+  keywords        String  @default("")
+  ogImage         String  @default("")
+  noindex         Boolean @default(false)
+  author          String  @default("")
+
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt @default(now())
 }

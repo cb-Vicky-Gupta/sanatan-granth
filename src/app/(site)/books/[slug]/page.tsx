@@ -2,9 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BookCover } from "@/components/book-cover";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Icon } from "@/components/icons";
+import { JsonLd } from "@/components/json-ld";
 import { RichText } from "@/components/rich-text";
-import { getBookBySlug } from "@/lib/site";
+import { buildMetadata, getSiteUrl } from "@/lib/seo";
+import { getBookBySlug, getSettings } from "@/lib/site";
+import { bookSchema, breadcrumbSchema, graph, type Crumb } from "@/lib/structured-data";
 import { excerptFrom } from "@/lib/utils";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -12,11 +16,25 @@ type Params = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const book = await getBookBySlug(slug);
-  if (!book) return { title: "Book not found" };
-  return {
-    title: book.title,
-    description: excerptFrom(book.description, 155),
-  };
+  if (!book) return { title: "Book not found", robots: { index: false, follow: false } };
+
+  return buildMetadata({
+    title: book.metaTitle || `${book.title}${book.subtitle ? ` — ${book.subtitle}` : ""}`,
+    description:
+      book.metaDescription ||
+      excerptFrom(
+        book.description ||
+          `Read ${book.title} in full, free of charge — ${book.chapters.length} chapters in ${book.language}.`,
+        158,
+      ),
+    path: `/books/${book.slug}`,
+    image: book.ogImage || book.coverImage,
+    keywords: book.keywords,
+    noindex: book.noindex,
+    type: "book",
+    modifiedTime: book.updatedAt.toISOString(),
+    ...(book.author ? { authors: [book.author] } : {}),
+  });
 }
 
 export default async function BookPage({ params }: Params) {
@@ -24,12 +42,20 @@ export default async function BookPage({ params }: Params) {
   const book = await getBookBySlug(slug);
   if (!book) notFound();
 
+  const [settings, origin] = await Promise.all([getSettings(), getSiteUrl()]);
+
+  const crumbs: Crumb[] = [
+    { name: "Home", path: "/" },
+    { name: "Books", path: "/books" },
+    ...(book.category ? [{ name: book.category.name, path: `/books?category=${book.category.slug}` }] : []),
+    { name: book.title, path: `/books/${book.slug}` },
+  ];
+
   return (
     <div className="mx-auto max-w-6xl px-5 py-12 lg:px-10 lg:py-16">
-      <Link href="/books" className="inline-flex items-center gap-2 text-[15px] text-brand hover:text-brand-dark">
-        <Icon name="arrow" className="h-4 w-4 rotate-180" />
-        All books
-      </Link>
+      <JsonLd data={graph([bookSchema(book, settings, origin), breadcrumbSchema(crumbs, origin)])} />
+
+      <Breadcrumbs crumbs={crumbs} />
 
       <div className="grid gap-10 pt-8 lg:grid-cols-[300px_1fr] lg:gap-16">
         <div className="flex flex-col gap-4">
@@ -59,8 +85,8 @@ export default async function BookPage({ params }: Params) {
               download
               className="flex h-12 items-center justify-center gap-2 rounded-md border border-line-2 text-[16px] text-ink-2 transition-colors hover:border-brand hover:text-brand"
             >
-              <Icon name="download" className="h-4 w-4" />
-              Download PDF
+              <Icon name="download" className="h-4 w-4" aria-hidden="true" />
+              Download {book.title} (PDF)
             </a>
           ) : (
             <span className="flex h-12 items-center justify-center rounded-md border border-dashed border-line-2 text-[15px] text-muted">
@@ -94,7 +120,7 @@ export default async function BookPage({ params }: Params) {
           <header className="flex flex-col gap-3">
             {book.sanskritTitle && <span className="deva text-2xl text-brand">{book.sanskritTitle}</span>}
             <h1 className="font-display text-4xl font-bold text-ink sm:text-5xl">{book.title}</h1>
-            <p className="text-[17px] text-muted">{book.subtitle}</p>
+            {book.subtitle && <p className="text-[17px] text-muted">{book.subtitle}</p>}
           </header>
 
           <RichText content={book.description} />
@@ -118,7 +144,7 @@ export default async function BookPage({ params }: Params) {
                           <span className="text-[14px] text-muted">{chapter.summary}</span>
                         )}
                       </span>
-                      <Icon name="arrow" className="ml-auto h-4 w-4 shrink-0 text-brand" />
+                      <Icon name="arrow" className="ml-auto h-4 w-4 shrink-0 text-brand" aria-hidden="true" />
                     </Link>
                   </li>
                 ))}
