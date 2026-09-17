@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #fdf8ef;
+  --color-cream-2: #faf1e0;
+  --color-cream-3: #f6ecd9;
+  --color-card: #fffcf6;
+  --color-ink: #241608;
+  --color-ink-2: #2a1f14;
+  --color-body: #4a3520;
+  --color-muted: #7a6851;
+  --color-line: #ece0c9;
+  --color-line-2: #ddcdb0;
+  --color-brand: #8a5a24;
+  --color-brand-dark: #6a4318;
+  --color-gold: #dcb96f;
+  --color-night: #241a10;
+  --color-night-2: #1e1a14;
+
+  --font-display: var(--font-display), Georgia, serif;
+  --font-body: var(--font-body), Georgia, serif;
+  --font-deva: var(--font-deva), serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-ink-2);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: #f0dcb4;
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 3px;
+  }
+}
+
+@utility eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: #855321;
+}
+
+@utility deva {
+  font-family: var(--font-deva);
+  line-height: 1.85;
+}

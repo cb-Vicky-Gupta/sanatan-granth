@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" width="900" height="620" role="img" aria-label="An open manuscript on a wooden stand">
+  <rect width="900" height="620" fill="#f3e4c9"/>
+  <g fill="#e3cda4">
+    <rect x="0" y="470" width="900" height="150"/>
+  </g>
+  <g transform="translate(450 330)">
+    <path d="M-330 60 L0 10 L330 60 L330 76 L0 26 L-330 76 Z" fill="#8a6136"/>
+    <path d="M-318 54 L-8 6 L-8 -140 L-318 -92 Z" fill="#fffaef"/>
+    <path d="M318 54 L8 6 L8 -140 L318 -92 Z" fill="#fffaef"/>
+    <path d="M-318 54 L-8 6 L-8 -140 L-318 -92 Z" fill="#000" opacity="0.04"/>
+    <g stroke="#b79a6a" stroke-width="5" stroke-linecap="round">
+      <path d="M-282 -68 L-44 -104"/>
+      <path d="M-282 -40 L-44 -76"/>
+      <path d="M-282 -12 L-90 -44"/>
+      <path d="M-282 16 L-44 -20"/>
+      <path d="M44 -104 L282 -68"/>
+      <path d="M44 -76 L282 -40"/>
+      <path d="M44 -48 L236 -16"/>
+      <path d="M44 -20 L282 16"/>
+    </g>
+    <circle cx="0" cy="-70" r="26" fill="none" stroke="#a9712b" stroke-width="4"/>
+    <circle cx="0" cy="-70" r="10" fill="#a9712b"/>
+  </g>
+  <g fill="#a9712b" opacity="0.35">
+    <circle cx="120" cy="120" r="46" fill="none" stroke="#a9712b" stroke-width="3"/>
+    <circle cx="780" cy="150" r="30" fill="none" stroke="#a9712b" stroke-width="3"/>
+  </g>
+</svg>

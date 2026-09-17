@@ -1,0 +1,159 @@
+// Sanatan Granth — data model
+// SQLite by default so the project runs with zero setup.
+// To move to Postgres: change provider to "postgresql" and update DATABASE_URL.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         String   @default("admin")
+  createdAt    DateTime @default(now())
+}
+
+/// Global site chrome: header, footer, contact details, social links.
+model Setting {
+  id            Int      @id @default(1)
+  siteName      String   @default("Sanatan Granth")
+  tagline       String   @default("Timeless Wisdom for a Better Tomorrow")
+  footerAbout   String   @default("")
+  footerQuote   String   @default("")
+  contactEmail  String   @default("")
+  contactPhone  String   @default("")
+  contactAddress String  @default("")
+  youtube       String   @default("")
+  instagram     String   @default("")
+  facebook      String   @default("")
+  twitter       String   @default("")
+  linkedin      String   @default("")
+  updatedAt     DateTime @updatedAt @default(now())
+}
+
+/// Everything editable on the homepage.
+model HomePage {
+  id               Int      @id @default(1)
+  heroEyebrow      String   @default("EXPLORE · LEARN · LIVE")
+  heroTitleLine1   String   @default("India's Eternal Wisdom")
+  heroTitleLine2   String   @default("Now in Your Hands")
+  heroSubtitle     String   @default("")
+  heroImage        String   @default("/images/hero.svg")
+  heroCtaLabel     String   @default("Explore Books")
+  heroCtaHref      String   @default("/books")
+  heroNote         String   @default("Free to read · Free to download · No account needed")
+  heroQuote        String   @default("A journey to inner peace begins with a single verse.")
+  featuredEyebrow  String   @default("FEATURED BOOKS")
+  featuredTitle    String   @default("Discover Timeless Scriptures")
+  featuredSubtitle String   @default("")
+  verseEnabled     Boolean  @default(true)
+  aboutTitle       String   @default("")
+  aboutBody        String   @default("")
+  aboutImage       String   @default("")
+  updatedAt        DateTime @updatedAt @default(now())
+}
+
+model Category {
+  id       String @id @default(cuid())
+  name     String
+  slug     String @unique
+  subtitle String @default("")
+  icon     String @default("lotus")
+  position Int    @default(0)
+  books    Book[]
+}
+
+model Book {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  sanskritTitle String    @default("")
+  subtitle      String    @default("")
+  description   String    @default("")
+  coverImage    String    @default("")
+  coverColor    String    @default("#9b3a1e")
+  pdfUrl        String    @default("")
+  language      String    @default("Sanskrit · Hindi · English")
+  featured      Boolean   @default(false)
+  published     Boolean   @default(true)
+  position      Int       @default(0)
+  categoryId    String?
+  category      Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  chapters      Chapter[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt @default(now())
+
+  @@index([categoryId])
+}
+
+model Chapter {
+  id            String @id @default(cuid())
+  bookId        String
+  book          Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  number        Int
+  title         String
+  sanskritTitle String @default("")
+  summary       String @default("")
+  content       String @default("")
+
+  @@unique([bookId, number])
+  @@index([bookId])
+}
+
+/// Verse of the day block on the homepage.
+model Verse {
+  id              String   @id @default(cuid())
+  reference       String
+  sanskrit        String
+  transliteration String   @default("")
+  translation     String
+  active          Boolean  @default(false)
+  createdAt       DateTime @default(now())
+}
+
+/// The four promises strip near the footer.
+model Feature {
+  id       String @id @default(cuid())
+  title    String
+  subtitle String @default("")
+  icon     String @default("check")
+  position Int    @default(0)
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  excerpt     String    @default("")
+  content     String    @default("")
+  coverImage  String    @default("")
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt @default(now())
+}
+
+model Faq {
+  id       String @id @default(cuid())
+  question String
+  answer   String
+  position Int    @default(0)
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String   @default("")
+  body      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
